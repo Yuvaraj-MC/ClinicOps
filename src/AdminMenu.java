@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class AdminMenu {
 
     private static final int DOCTOR_ENTRY = 1;
@@ -6,15 +8,11 @@ public class AdminMenu {
     private static final int DISPLAY_DOCTORS = 4;
     private static final int LOGOUT = 5;
 
-    // Class-level variables for 3 doctors (static = shared across methods)
-    private static String doctor1Name, doctor1Spec, doctor1Slots;
-    private static int doctor1Exp;
+    // Static list retains doctor data across method calls
+    private static ArrayList<Doctor> doctors = new ArrayList<>();
 
-    private static String doctor2Name, doctor2Spec, doctor2Slots;
-    private static int doctor2Exp;
-
-    private static String doctor3Name, doctor3Spec, doctor3Slots;
-    private static int doctor3Exp;
+    // Counter for auto-generated IDs
+    private static int idCounter = 1;
 
     public static void show() {
         boolean logout = false;
@@ -46,7 +44,6 @@ public class AdminMenu {
         }
     }
 
-    // Displays the admin menu options
     private static void displayAdminOptions() {
         System.out.println("\n===== ADMIN MENU =====");
         System.out.println("1. Doctor's Data Entry");
@@ -56,43 +53,40 @@ public class AdminMenu {
         System.out.println("5. Logout");
     }
 
-    // Registers 3 doctors, one by one
+    // Registers 3 doctors as Doctor objects, auto-generating IDs
     private static void registerDoctors() {
         System.out.println("\n--- Enter details for 3 Doctors ---");
 
-        System.out.println("\nDoctor 1:");
-        doctor1Name = ScannerHelper.readString("Enter Name: ");
-        doctor1Spec = ScannerHelper.readString("Enter Specialization: ");
-        doctor1Exp = ScannerHelper.readInt("Enter Experience (years): ");
-        doctor1Slots = ScannerHelper.readString("Enter Slots (Morning/Evening/Both): ");
+        for (int i = 1; i <= 3; i++) {
+            System.out.println("\nDoctor " + i + ":");
+            String name = ScannerHelper.readString("Enter Name: ");
+            String spec = ScannerHelper.readString("Enter Specialization: ");
+            int exp = ScannerHelper.readInt("Enter Experience (years): ");
+            String shift = ScannerHelper.readString("Enter Shift (Morning/Evening/Both): ");
 
-        System.out.println("\nDoctor 2:");
-        doctor2Name = ScannerHelper.readString("Enter Name: ");
-        doctor2Spec = ScannerHelper.readString("Enter Specialization: ");
-        doctor2Exp = ScannerHelper.readInt("Enter Experience (years): ");
-        doctor2Slots = ScannerHelper.readString("Enter Slots (Morning/Evening/Both): ");
+            String id = String.format("D%04d", idCounter);
+            idCounter++;
 
-        System.out.println("\nDoctor 3:");
-        doctor3Name = ScannerHelper.readString("Enter Name: ");
-        doctor3Spec = ScannerHelper.readString("Enter Specialization: ");
-        doctor3Exp = ScannerHelper.readInt("Enter Experience (years): ");
-        doctor3Slots = ScannerHelper.readString("Enter Slots (Morning/Evening/Both): ");
+            Doctor doctor = new Doctor(id, name, spec, exp, shift);
+            doctors.add(doctor);
+        }
 
         System.out.println("\nAll 3 doctors registered successfully!");
     }
 
-    // Displays the registered doctors' data
+    // Displays all registered doctors
     private static void displayDoctors() {
-        if (doctor1Name == null) {
+        if (doctors.isEmpty()) {
             System.out.println("\nNo doctors registered yet. Please use option 1 first.");
             return;
         }
 
         System.out.println("\n===== DOCTORS' LIST =====");
-        System.out.printf("%-15s %-18s %-12s %-15s%n", "Name", "Specialization", "Experience", "Slots");
-        System.out.println("-------------------------------------------------------------");
-        System.out.printf("%-15s %-18s %-12d %-15s%n", doctor1Name, doctor1Spec, doctor1Exp, doctor1Slots);
-        System.out.printf("%-15s %-18s %-12d %-15s%n", doctor2Name, doctor2Spec, doctor2Exp, doctor2Slots);
-        System.out.printf("%-15s %-18s %-12d %-15s%n", doctor3Name, doctor3Spec, doctor3Exp, doctor3Slots);
+        System.out.printf("%-8s %-15s %-18s %-12s %-15s%n",
+                "ID", "Name", "Specialization", "Experience", "Shift");
+        System.out.println("--------------------------------------------------------------------------");
+        for (Doctor doctor : doctors) {
+            System.out.println(doctor);   // uses toString()
+        }
     }
 }
