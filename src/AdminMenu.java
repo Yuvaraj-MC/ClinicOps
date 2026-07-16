@@ -23,7 +23,7 @@ public class AdminMenu {
                     registerDoctors();
                     break;
                 case BULK_ENTRY:
-                    System.out.println(">> Bulk Data Entry - logic coming in a future use case.");
+                    bulkEntry();
                     break;
                 case VIEW_AUDIT:
                     System.out.println(">> View Audit Logs - logic coming in a future use case.");
@@ -48,6 +48,30 @@ public class AdminMenu {
         System.out.println("3. View Audit Logs");
         System.out.println("4. Display Doctors' List");
         System.out.println("5. Logout");
+    }
+
+    // Reads doctors from a CSV file and adds them to the list
+    private static void bulkEntry() {
+        String filePath = ScannerHelper.readString("Enter the CSV file name with path: ");
+
+        ArrayList<Doctor> importedDoctors = FileHandler.readDoctorsFromCsv(filePath);
+
+        if (importedDoctors.isEmpty()) {
+            System.out.println("No valid doctors were imported.");
+            return;
+        }
+
+        // Assign auto-generated IDs to each imported doctor
+        for (Doctor doctor : importedDoctors) {
+            String id = String.format("D%04d", idCounter);
+            doctor.setId(id);
+            idCounter++;
+        }
+
+        // Batch add - more efficient than adding one by one
+        doctors.addAll(importedDoctors);
+
+        System.out.println("\n" + importedDoctors.size() + " doctors imported successfully!");
     }
 
     private static void registerDoctors() {

@@ -18,10 +18,12 @@ public class Doctor {
     public Specialization getSpecialization() { return specialization; }
     public int getExperience() { return experience; }
     public Shift getShift() { return shift; }
-
+    public void setId(String id) { this.id = id; }
     @Override
     public String toString() {
         return String.format("%-8s %-15s %-18s %-12d %-15s",
                 id, name, specialization, experience, shift);
     }
+
+
 }
