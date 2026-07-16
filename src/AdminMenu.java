@@ -8,10 +8,7 @@ public class AdminMenu {
     private static final int DISPLAY_DOCTORS = 4;
     private static final int LOGOUT = 5;
 
-    // Static list retains doctor data across method calls
     private static ArrayList<Doctor> doctors = new ArrayList<>();
-
-    // Counter for auto-generated IDs
     private static int idCounter = 1;
 
     public static void show() {
@@ -53,16 +50,17 @@ public class AdminMenu {
         System.out.println("5. Logout");
     }
 
-    // Registers 3 doctors as Doctor objects, auto-generating IDs
     private static void registerDoctors() {
         System.out.println("\n--- Enter details for 3 Doctors ---");
 
         for (int i = 1; i <= 3; i++) {
             System.out.println("\nDoctor " + i + ":");
             String name = ScannerHelper.readString("Enter Name: ");
-            String spec = ScannerHelper.readString("Enter Specialization: ");
+            Specialization spec = ScannerHelper.readEnumChoice(
+                    "Select Specialization:", Specialization.values());
             int exp = ScannerHelper.readInt("Enter Experience (years): ");
-            String shift = ScannerHelper.readString("Enter Shift (Morning/Evening/Both): ");
+            Shift shift = ScannerHelper.readEnumChoice(
+                    "Select Shift:", Shift.values());
 
             String id = String.format("D%04d", idCounter);
             idCounter++;
@@ -74,7 +72,6 @@ public class AdminMenu {
         System.out.println("\nAll 3 doctors registered successfully!");
     }
 
-    // Displays all registered doctors
     private static void displayDoctors() {
         if (doctors.isEmpty()) {
             System.out.println("\nNo doctors registered yet. Please use option 1 first.");
@@ -86,7 +83,7 @@ public class AdminMenu {
                 "ID", "Name", "Specialization", "Experience", "Shift");
         System.out.println("--------------------------------------------------------------------------");
         for (Doctor doctor : doctors) {
-            System.out.println(doctor);   // uses toString()
+            System.out.println(doctor);
         }
     }
 }
