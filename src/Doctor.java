@@ -5,12 +5,22 @@ public class Doctor {
     private int experience;
     private Shift shift;
 
+    private java.util.ArrayList<String> bookedSlots = new java.util.ArrayList<>();
+
     public Doctor(String id, String name, Specialization specialization, int experience, Shift shift) {
         this.id = id;
         this.name = name;
         this.specialization = specialization;
         this.experience = experience;
         this.shift = shift;
+    }
+
+    public boolean isSlotAvailable(String slot) {
+        return !bookedSlots.contains(slot);
+    }
+
+    public void bookSlot(String slot) {
+        bookedSlots.add(slot);
     }
 
     public String getId() { return id; }

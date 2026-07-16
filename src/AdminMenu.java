@@ -50,6 +50,11 @@ public class AdminMenu {
         System.out.println("5. Logout");
     }
 
+    // Lets other classes (FrontDesk) access the doctor list
+    public static ArrayList<Doctor> getDoctors() {
+        return doctors;
+    }
+
     // Reads doctors from a CSV file and adds them to the list
     private static void bulkEntry() {
         String filePath = ScannerHelper.readString("Enter the CSV file name with path: ");

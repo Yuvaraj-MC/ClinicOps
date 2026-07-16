@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class FrontDeskMenu {
 
@@ -6,6 +7,8 @@ public class FrontDeskMenu {
     private static final int BOOK_APPOINTMENT = 2;
     private static final int VIEW_PATIENTS = 3;
     private static final int LOGOUT = 4;
+
+    private static ArrayList<Appointment> appointments = new ArrayList<>();
 
     // Static list retains patient data across method calls
     private static ArrayList<Patient> patients = new ArrayList<>();
@@ -23,7 +26,7 @@ public class FrontDeskMenu {
                     registerPatient();
                     break;
                 case BOOK_APPOINTMENT:
-                    System.out.println(">> Book Appointment - logic coming in a future use case.");
+                    bookAppointment();
                     break;
                 case VIEW_PATIENTS:
                     viewPatients();
@@ -37,6 +40,8 @@ public class FrontDeskMenu {
             }
         }
     }
+
+
 
     private static void displayFrontDeskOptions() {
         System.out.println("\n===== FRONT DESK MENU =====");
@@ -106,5 +111,57 @@ public class FrontDeskMenu {
         for (Patient patient : patients) {
             System.out.println(patient);
         }
+    }
+
+
+    private static void bookAppointment() {
+        System.out.println("\n--- Book Appointment ---");
+
+        // Check patient registered or not
+        String mobile = ScannerHelper.readMobileNumber("Enter Patient Mobile Number: ");
+        Patient patient = findByMobile(mobile);
+
+        if (patient == null) {
+            System.out.println("No patient found with this mobile. Please register first.");
+            return;
+        }
+
+        System.out.println("Patient found: " + patient.getName());
+
+        // Get preferred slot
+        String slot = ScannerHelper.readSlotChoice();
+
+        // From doctor list, find all doctors free at this slot
+        ArrayList<Doctor> doctors = AdminMenu.getDoctors();
+        if (doctors.isEmpty()) {
+            System.out.println("No doctors available in the system.");
+            return;
+        }
+
+        ArrayList<Doctor> freeDoctors = new ArrayList<>();
+        for (Doctor doc : doctors) {
+            if (doc.isSlotAvailable(slot)) {
+                freeDoctors.add(doc);
+            }
+        }
+
+        if (freeDoctors.isEmpty()) {
+            System.out.println("No doctors available at " + slot + ". Please try another slot.");
+            return;
+        }
+
+        // If more than one free, pick one at random
+        Random rand = new Random();
+        Doctor assignedDoc = freeDoctors.get(rand.nextInt(freeDoctors.size()));
+
+        // Block the slot for that doctor
+        assignedDoc.bookSlot(slot);
+
+        // Create appointment (references, not copies)
+        Appointment appointment = new Appointment(patient, assignedDoc, slot);
+        appointments.add(appointment);
+
+        System.out.println("\nAppointment booked successfully!");
+        System.out.println(appointment);
     }
 }

@@ -59,4 +59,25 @@ public class ScannerHelper {
             System.out.println("Invalid choice. Please select between 1 and " + values.length + ".");
         }
     }
+
+    // All 16 slots: 8 morning + 8 evening
+    public static final String[] SLOTS = {
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
+            "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"
+    };
+
+    // Displays all slots and returns the selected one
+    public static String readSlotChoice() {
+        while (true) {
+            System.out.println("\nAvailable Appointment Slots:");
+            for (int i = 0; i < SLOTS.length; i++) {
+                System.out.println((i + 1) + ". " + SLOTS[i]);
+            }
+            int choice = readInt("Select a slot: ");
+            if (choice >= 1 && choice <= SLOTS.length) {
+                return SLOTS[choice - 1];
+            }
+            System.out.println("Invalid slot. Please select 1 to " + SLOTS.length + ".");
+        }
+    }
 }
