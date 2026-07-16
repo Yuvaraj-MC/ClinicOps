@@ -46,14 +46,32 @@ public class FrontDeskMenu {
         System.out.println("4. Logout");
     }
 
-    // Registers a single patient with auto-generated ID
+
+
+    // Registers a patient only if mobile number is not already present
     private static void registerPatient() {
         System.out.println("\n--- Register New Patient ---");
 
+        // Read mobile number FIRST
+        String mobile = ScannerHelper.readMobileNumber("Enter Mobile Number: ");
+
+        // Linear search: check if this mobile already exists
+        Patient existing = findByMobile(mobile);
+
+        if (existing != null) {
+            System.out.println("\nWelcome back, " + existing.getName() + "!");
+            System.out.println("You are already registered with us.");
+            System.out.println("\nYour existing details:");
+            System.out.printf("%-8s %-15s %-10s %-6s %-15s%n",
+                    "ID", "Name", "Gender", "Age", "Mobile");
+            System.out.println(existing);
+            return; // stop registration
+        }
+
+        // Not found -> continue with full registration
         String name = ScannerHelper.readString("Enter Name: ");
         String gender = ScannerHelper.readString("Enter Gender: ");
         int age = ScannerHelper.readInt("Enter Age: ");
-        String mobile = ScannerHelper.readMobileNumber("Enter Mobile Number: ");
 
         String id = String.format("P%04d", idCounter);
         idCounter++;
@@ -62,6 +80,16 @@ public class FrontDeskMenu {
         patients.add(patient);
 
         System.out.println("\nPatient registered successfully! Patient ID: " + id);
+    }
+
+    // Linear search - returns the Patient if mobile matches, else null
+    private static Patient findByMobile(String mobile) {
+        for (Patient patient : patients) {
+            if (patient.getMobileNumber().equals(mobile)) {
+                return patient;
+            }
+        }
+        return null; // not found
     }
 
     // Displays all registered patients
