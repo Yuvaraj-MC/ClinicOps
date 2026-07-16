@@ -19,6 +19,20 @@ public class ScannerHelper {
         return readInt();
     }
 
+    // Reads and validates an Indian mobile number (10 digits, starts with 6-9)
+    public static String readMobileNumber(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+
+            // Indian mobile: starts with 6,7,8 or 9 and has exactly 10 digits
+            if (input.matches("[6-9][0-9]{9}")) {
+                return input;
+            }
+            System.out.println("Invalid mobile number. Enter a 10-digit number starting with 6-9.");
+        }
+    }
+
     public static String readString(String prompt) {
         while (true) {
             System.out.print(prompt);
