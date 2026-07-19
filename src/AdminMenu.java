@@ -59,24 +59,32 @@ public class AdminMenu {
     private static void bulkEntry() {
         String filePath = ScannerHelper.readString("Enter the CSV file name with path: ");
 
-        ArrayList<Doctor> importedDoctors = FileHandler.readDoctorsFromCsv(filePath);
+        try {
+            ArrayList<Doctor> importedDoctors = FileHandler.readDoctorsFromCsv(filePath);
 
-        if (importedDoctors.isEmpty()) {
-            System.out.println("No valid doctors were imported.");
-            return;
+            if (importedDoctors.isEmpty()) {
+                System.out.println("No valid doctors were imported.");
+                AuditLogger.log("CSV upload failed: no valid doctors in " + filePath, "ERROR");
+                return;
+            }
+
+            // Assign auto-generated IDs to each imported doctor
+            for (Doctor doctor : importedDoctors) {
+                String id = String.format("D%04d", idCounter);
+                doctor.setId(id);
+                idCounter++;
+            }
+
+            // Batch add - more efficient than adding one by one
+            doctors.addAll(importedDoctors);
+
+            System.out.println("\n" + importedDoctors.size() + " doctors imported successfully!");
+            AuditLogger.log(importedDoctors.size() + " doctors imported from CSV: " + filePath, "INFO");
+
+        } catch (Exception e) {
+            System.out.println("Error reading CSV file: " + e.getMessage());
+            AuditLogger.log("CSV upload failed: " + e.getMessage(), "ERROR");
         }
-
-        // Assign auto-generated IDs to each imported doctor
-        for (Doctor doctor : importedDoctors) {
-            String id = String.format("D%04d", idCounter);
-            doctor.setId(id);
-            idCounter++;
-        }
-
-        // Batch add - more efficient than adding one by one
-        doctors.addAll(importedDoctors);
-
-        System.out.println("\n" + importedDoctors.size() + " doctors imported successfully!");
     }
 
     private static void registerDoctors() {

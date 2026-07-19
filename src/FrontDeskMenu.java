@@ -8,6 +8,8 @@ public class FrontDeskMenu {
     private static final int VIEW_PATIENTS = 3;
     private static final int LOGOUT = 4;
 
+    private static final int MAX_MOBILE_ATTEMPTS = 3;   // UC14: security threshold
+
     private static ArrayList<Appointment> appointments = new ArrayList<>();
 
     // Static list retains patient data across method calls
@@ -114,12 +116,27 @@ public class FrontDeskMenu {
     private static void bookAppointment() {
         System.out.println("\n--- Book Appointment ---");
 
-        String mobile = ScannerHelper.readMobileNumber("Enter Patient Mobile Number: ");
-        Patient patient = findByMobile(mobile);
+        // UC14: wrong mobile threshold -> security WARNING
+        Patient patient = null;
+        int wrongAttempts = 0;
 
-        if (patient == null) {
-            System.out.println("No patient found with this mobile. Please register first.");
-            return;
+        while (true) {
+            String mobile = ScannerHelper.readMobileNumber("Enter Patient Mobile Number: ");
+            patient = findByMobile(mobile);
+
+            if (patient != null) {
+                break;
+            }
+
+            wrongAttempts++;
+            System.out.println("No patient found with this mobile.");
+
+            if (wrongAttempts >= MAX_MOBILE_ATTEMPTS) {
+                AuditLogger.log("SECURITY: " + MAX_MOBILE_ATTEMPTS
+                        + " failed mobile lookups - possible unauthorized attempt", "WARNING");
+                System.out.println("Too many failed attempts. Returning to menu.");
+                return;
+            }
         }
 
         System.out.println("Patient found: " + patient.getName());
@@ -136,7 +153,7 @@ public class FrontDeskMenu {
             return;
         }
 
-        // Specialization == AND slot free
+        // Specialization == AND shift AND slot free
         java.util.List<Doctor> freeDoctors = doctors.stream()
                 .filter(doc -> doc.getSpecialization() == requestedSpec)
                 .filter(doc -> doc.isTimeInShift(slot))
