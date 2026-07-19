@@ -79,6 +79,7 @@ public class FrontDeskMenu {
 
         Patient patient = new Patient(id, name, gender, age, mobile);
         patients.add(patient);
+        AuditLogger.log("Patient registered: " + patient.getName(), "INFO");
 
         System.out.println("\nPatient registered successfully! Patient ID: " + id);
     }
@@ -145,6 +146,7 @@ public class FrontDeskMenu {
         if (freeDoctors.isEmpty()) {
             System.out.println("No " + requestedSpec + " doctor available at "
                     + slot + ". Please try another slot or specialization.");
+            AuditLogger.log("Booking failed - no doctor for " + requestedSpec, "WARNING");
             return;
         }
 
@@ -156,6 +158,8 @@ public class FrontDeskMenu {
 
         Appointment appointment = new Appointment(patient, assignedDoc, slot);
         appointments.add(appointment);
+        AuditLogger.log("Appointment booked for " + patient.getName()
+                + " with Dr. " + assignedDoc.getName(), "INFO");
 
         System.out.println("\nAppointment booked successfully!");
         System.out.println(appointment);

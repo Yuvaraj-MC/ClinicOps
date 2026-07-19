@@ -26,7 +26,7 @@ public class AdminMenu {
                     bulkEntry();
                     break;
                 case VIEW_AUDIT:
-                    System.out.println(">> View Audit Logs - logic coming in a future use case.");
+                    AuditLogger.viewLogs();
                     break;
                 case DISPLAY_DOCTORS:
                     displayDoctors();
@@ -96,6 +96,7 @@ public class AdminMenu {
 
             Doctor doctor = new Doctor(id, name, spec, exp, shift);
             doctors.add(doctor);
+            AuditLogger.log("Doctor registered: " + doctor.getName(), "INFO");
         }
 
         System.out.println("\nAll 3 doctors registered successfully!");
