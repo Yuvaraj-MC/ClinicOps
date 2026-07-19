@@ -138,6 +138,7 @@ public class FrontDeskMenu {
         // Specialization == AND slot free
         java.util.List<Doctor> freeDoctors = doctors.stream()
                 .filter(doc -> doc.getSpecialization() == requestedSpec)
+                .filter(doc -> doc.isTimeInShift(slot))
                 .filter(doc -> doc.isSlotAvailable(slot))
                 .collect(java.util.stream.Collectors.toList());
 

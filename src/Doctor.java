@@ -32,6 +32,15 @@ public class Doctor {
     public Shift getShift() { return shift; }
     public void setId(String id) { this.id = id; }
 
+    public boolean isTimeInShift(String slot) {
+        boolean isMorningSlot = slot.contains("AM");
+        if (this.shift == Shift.MORNING) {
+            return isMorningSlot;
+        } else {
+            return !isMorningSlot;
+        }
+    }
+
 
     @Override
     public String toString() {
