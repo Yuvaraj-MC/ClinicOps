@@ -19,6 +19,21 @@ public class ScannerHelper {
         return readInt();
     }
 
+    public static Specialization readSpecialization() {
+        while (true) {
+            System.out.println("\nSelect Specialization:");
+            Specialization[] options = Specialization.values();
+            for (int i = 0; i < options.length; i++) {
+                System.out.println((i + 1) + ". " + options[i]);
+            }
+            int choice = readInt("Enter choice: ");
+            if (choice >= 1 && choice <= options.length) {
+                return options[choice - 1];
+            }
+            System.out.println("Invalid choice. Try again.");
+        }
+    }
+
     // Reads and validates an Indian mobile number (10 digits, starts with 6-9)
     public static String readMobileNumber(String prompt) {
         while (true) {

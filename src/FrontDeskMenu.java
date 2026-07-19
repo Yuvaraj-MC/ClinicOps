@@ -14,6 +14,7 @@ public class FrontDeskMenu {
     private static ArrayList<Patient> patients = new ArrayList<>();
     private static int idCounter = 1;
 
+
     public static void show() {
         boolean logout = false;
 
@@ -42,7 +43,6 @@ public class FrontDeskMenu {
     }
 
 
-
     private static void displayFrontDeskOptions() {
         System.out.println("\n===== FRONT DESK MENU =====");
         System.out.println("1. Patient Registration");
@@ -52,15 +52,12 @@ public class FrontDeskMenu {
     }
 
 
-
     // Registers a patient only if mobile number is not already present
     private static void registerPatient() {
         System.out.println("\n--- Register New Patient ---");
 
-        // Read mobile number FIRST
         String mobile = ScannerHelper.readMobileNumber("Enter Mobile Number: ");
 
-        // Linear search: check if this mobile already exists
         Patient existing = findByMobile(mobile);
 
         if (existing != null) {
@@ -70,10 +67,9 @@ public class FrontDeskMenu {
             System.out.printf("%-8s %-15s %-10s %-6s %-15s%n",
                     "ID", "Name", "Gender", "Age", "Mobile");
             System.out.println(existing);
-            return; // stop registration
+            return;
         }
 
-        // Not found -> continue with full registration
         String name = ScannerHelper.readString("Enter Name: ");
         String gender = ScannerHelper.readString("Enter Gender: ");
         int age = ScannerHelper.readInt("Enter Age: ");
@@ -94,7 +90,7 @@ public class FrontDeskMenu {
                 return patient;
             }
         }
-        return null; // not found
+        return null;
     }
 
     // Displays all registered patients
@@ -117,7 +113,6 @@ public class FrontDeskMenu {
     private static void bookAppointment() {
         System.out.println("\n--- Book Appointment ---");
 
-        // Check patient registered or not
         String mobile = ScannerHelper.readMobileNumber("Enter Patient Mobile Number: ");
         Patient patient = findByMobile(mobile);
 
@@ -128,25 +123,27 @@ public class FrontDeskMenu {
 
         System.out.println("Patient found: " + patient.getName());
 
+        // UC10: specialization input
+        Specialization requestedSpec = ScannerHelper.readSpecialization();
+
         // Get preferred slot
         String slot = ScannerHelper.readSlotChoice();
 
-        // From doctor list, find all doctors free at this slot
         ArrayList<Doctor> doctors = AdminMenu.getDoctors();
         if (doctors.isEmpty()) {
             System.out.println("No doctors available in the system.");
             return;
         }
 
-        ArrayList<Doctor> freeDoctors = new ArrayList<>();
-        for (Doctor doc : doctors) {
-            if (doc.isSlotAvailable(slot)) {
-                freeDoctors.add(doc);
-            }
-        }
+        // Specialization == AND slot free
+        java.util.List<Doctor> freeDoctors = doctors.stream()
+                .filter(doc -> doc.getSpecialization() == requestedSpec)
+                .filter(doc -> doc.isSlotAvailable(slot))
+                .collect(java.util.stream.Collectors.toList());
 
         if (freeDoctors.isEmpty()) {
-            System.out.println("No doctors available at " + slot + ". Please try another slot.");
+            System.out.println("No " + requestedSpec + " doctor available at "
+                    + slot + ". Please try another slot or specialization.");
             return;
         }
 
@@ -154,10 +151,8 @@ public class FrontDeskMenu {
         Random rand = new Random();
         Doctor assignedDoc = freeDoctors.get(rand.nextInt(freeDoctors.size()));
 
-        // Block the slot for that doctor
         assignedDoc.bookSlot(slot);
 
-        // Create appointment (references, not copies)
         Appointment appointment = new Appointment(patient, assignedDoc, slot);
         appointments.add(appointment);
 
